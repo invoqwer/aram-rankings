@@ -36,7 +36,7 @@
     else
       .inline.heading N/A
     if p.prevmmr.length
-      if p.mmr && p.prevmmr.length
+      if p.mmr && p.prevmmr[p.prevmmr.length-1].mmr
         if p.prevmmr[p.prevmmr.length-1].mmr < p.mmr
           .inline.text-success  (+#{p.mmr-p.prevmmr[p.prevmmr.length-1].mmr})
         else

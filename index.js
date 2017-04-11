@@ -19,16 +19,23 @@ mongoose.Promise = global.Promise;
 
 // var rule = new schedule.RecurrenceRule();
 // rule.second = 1;
+// var f = 0;
 // schedule.scheduleJob(rule, function(){
 //   console.log('test');
+//   if (f == 0) {
+//     f = 1;
+//     MMR.updateAll(function(players) {
+//       console.log('updated all');
+//     });
+//   }
 // });
 
 // everyday at midnight
-schedule.scheduleJob('0 0 * * *', function(){
-  MMR.updateAll(function(players) {
-    console.log('updated all');
-  });
-});
+// schedule.scheduleJob('0 0 * * *', function(){
+//   MMR.updateAll(function(players) {
+//     console.log('updated all');
+//   });
+// });
 
 app.get('/', function (req, res) {
   MMR.getRankings(function(players, dates) {
@@ -42,6 +49,7 @@ app.get('/', function (req, res) {
 
 // MMR.generateJson();
 // MMR.populateFromFile();
+// MMR.test();
 
 app.get('/tracked', MMR.getTrackedPlayers);
 app.get('/mmr', MMR.getPlayerRankings);

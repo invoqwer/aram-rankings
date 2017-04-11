@@ -59,7 +59,7 @@ var getMMR = function(user, cb) {
             // {"error":"no MMR data for summoner (001)"}
             if (data.error) {
                 ret.error = data.error;
-            } else if (data.ARAM.warn) {
+            } else if (!data.ARAM.avg) {
                 ret.error = 'no ARAM data for summoner';
             } else {
                 ret.ARAM.avg = data.ARAM.avg;
@@ -72,7 +72,7 @@ var getMMR = function(user, cb) {
 
 var formatDates = function(players, callback) {
     dates = {};
-    async.each(players,
+    async.eachLimit(players, 20,
         function(p, cb) {
             dates[p.name] = moment(p.updated).format(formatstring);
             return cb();
@@ -92,10 +92,12 @@ var updatePlayer = function(user, cb) {
                 // curr: E, last: NE
                 // curr: NE, last: E
                 if (player.mmr != ret.ARAM.avg) {
-                    player.prevmmr.push({
-                        mmr: player.mmr,
-                        date: player.updated
-                    });
+                    if (player.mmr) {
+                        player.prevmmr.push({
+                            mmr: player.mmr,
+                            date: player.updated
+                        });
+                    }
                     player.mmr = ret.ARAM.avg;
                     player.err = ret.ARAM.err;
                 } else if (player.err != ret.ARAM.err) {
@@ -132,16 +134,26 @@ var updatePlayer = function(user, cb) {
 var updateRankings = function(callback) {
     Player.find({}).sort({mmr:-1}).exec(function (err, players) {
         if (err) return callback(err, null);
-        async.eachOf(players,
+        var prevmmr = 0;
+        var rank = 0;
+        async.eachOfLimit(players, 20,
             function(p, i, cb) {
                 // mmr: E -> NE
-                if (!p.mmr && p.rank) {
-                    p.rank = null;
+                if (!p.mmr) {
+                    if (p.rank) {
+                        p.rank = null;
+                    }
                 // mmr: NE -> E
                 // mmr: E -> E
-                } else if (p.mmr && (p.rank != i+1)) {
-                    p.lastrank = p.rank;
-                    p.rank = i+1;
+                } else {
+                    if (prevmmr == p.mmr)  {
+                        p.rank = rank;
+                    } else {
+                        rank += 1;
+                        prevmmr = p.mmr;
+                        p.rank = rank;
+                    }
+
                 }
                 p.save(function (err, doc) {
                     if (err) return cb(err);
@@ -162,11 +174,11 @@ var generateJson = function() {
     var l, rank, mmr, name;
     f.split("\n").forEach(function(line) {
         l = line.split(/\s+/);
-        rank = l[0];
+        // rank = l[0];
         mmr = l[1];
-        if (rank == "null") {
-            rank = null;
-        }
+        // if (rank == "null") {
+        //     rank = null;
+        // }
         if (mmr == "null") {
             mmr = null;
         }
@@ -174,7 +186,7 @@ var generateJson = function() {
         name = l.join(" ").toLowerCase();
         res.push({
           name: name,
-          rank: rank,
+          rank: null,
           lastrank: null,
           mmr: mmr,
           err: null,
@@ -221,8 +233,9 @@ var getTrackedPlayers = function (req, res) {
 
 var updateAll = function(callback) {
     var list = getListArray();
-    async.each(list,
+    async.eachLimit(list, 5,
         function(player, cb) {
+            console.log('Updating: ' + player);
             var user = {
                 region: 'na',
                 name: player.toLowerCase()
@@ -236,6 +249,7 @@ var updateAll = function(callback) {
             if(err) return handleError(err);
             updateRankings(function(err, players) {
                 if(err) return handleError(err);
+                console.log('done');
                 return callback(players);
             });
         });
@@ -246,7 +260,7 @@ var updateSinglePlayer = function (req, res) {
         if (err) return handleError(err);
         updateRankings(function(err, players) {
             if(err) return handleError(err);
-            res.send(players);
+            res.send(doc);
         });
     });
 };
@@ -257,7 +271,24 @@ var updateAllPlayers = function (req, res) {
     });
 }
 
+var test = function (req, res) {
+    var p = {
+        "name": "ice man mic",
+        "rank": null,
+        "lastrank": null,
+        "mmr": "2191",
+        "err": null,
+        "prevmmr": [],
+        "error": null,
+        "updated": "2017-04-06T04:00:00.000Z"
+    };
+    Player.create(p, function(err, doc) {
+        console.log(doc);
+    });
+}
+
 module.exports = {
+    test: test,
     generateJson: generateJson,
     populateFromFile: populateFromFile,
     getRankings: getRankings,
