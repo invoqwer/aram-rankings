@@ -53,7 +53,9 @@
     .row
       .col-sm-12 
         if p.prevmmr.length
-          - var max = Math.max.apply(Math,p.prevmmr.map(function(o){return o.mmr;}))
+          -
+            var max = Math.max.apply(Math,p.prevmmr.map(function(o){return o.mmr;}))
+            max = (p.mmr > max) ? p.mmr: max
           | peak mmr: #{max}
         else
           - var res = p.mmr ? p.mmr : 'N/A'
