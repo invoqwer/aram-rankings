@@ -26,7 +26,8 @@ var handleError = function(err) {
 }
 
 var getListArray = function() {
-    var list = fs.readFileSync("./test.txt") + '';
+    // var list = fs.readFileSync("./test.txt") + '';
+    var list = fs.readFileSync("./list.txt") + '';
     return list.split("\n");
 }
 
@@ -188,7 +189,8 @@ var generateJson = function() {
 
 // do this on clean db
 var populateFromFile = function (req, res) {
-    var o = JSON.parse(fs.readFileSync('test.json', 'utf8'));
+    // var o = JSON.parse(fs.readFileSync('test.json', 'utf8'));
+    var o = JSON.parse(fs.readFileSync('initial.json', 'utf8'));
     o.forEach(function(p) {
         Player.create(p, function(err, doc) {
             if (err) return handleError(err);
