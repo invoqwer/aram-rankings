@@ -1,0 +1,37 @@
+extends ./partials/base.pug
+
+block content
+  .page-wrap
+    .container.title
+      .row.titlerow
+        .col-sm-12
+          .titleheader ARAM Rankings
+          .titleicon
+      .titleinfo
+        .row
+          .col-sm-12
+            | Grabs MMR data from 
+            a(href='na.whatismymmr.com') na.whatismymmr.com
+            |  and presents rankings in list format. Results updated daily.  
+        .row
+          .col-sm-12
+            | Based on Alkraan's 
+            a(href='https://drive.google.com/file/d/0B53RLvk_y2gfRjFWXzNoblZ0Nzg/view') google spreadsheet 
+        .row
+          .col-sm-12
+            //- span(aria-hidden='true').glyphicon.glyphicon-envelope
+            | IGN: 8K MMR Invoker / 
+            | Email: 
+            a(href='') rghvst@gmail.com
+    .container.list
+      .row.listheader
+        .col-sm-2 Rank
+        .col-sm-4 Name
+        .col-sm-3 MMR
+        .col-sm-3 Updated
+      each p in players
+        include player.pug
+  //- .container-fluid.footer
+  //-   .container.footercontainer
+  //-     .row
+  //-       .col-sm-4 Contact: 

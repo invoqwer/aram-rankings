@@ -1,0 +1,60 @@
+//- var playerSchema = new Schema({
+//-   name:  String,
+//-   rank: Number,
+//-   mmr: Number,
+//-   err: Number,
+//-   error: String,
+//-   lastrank: Number,
+//-   lastmmr: Number,
+//-   updated: String
+//- });
+- var target = 'row-' + p.name.replace(/ /g,'')
+- var targetid = '#' + target
+
+.row.listentry(data-toggle='collapse' data-target=targetid)
+  .col-sm-2
+    if p.rank
+      .inline.heading #{p.rank}
+    else
+      .inline.heading -
+    if p.lastrank
+      if p.rank && p.lastrank
+        if p.lastrank < p.rank
+          .inline.text-danger  (#{p.lastrank-p.rank})
+        else
+          .inline.text-success  (+#{p.lastrank-p.rank})
+      .inline.text-muted  last: #{p.lastrank}
+  .col-sm-4
+    .inline.heading #{p.name}
+  .col-sm-3
+    if p.mmr
+      .inline.heading #{p.mmr}
+        if p.err
+          .inline.superscript  &plusmn; #{p.err}
+        else
+          .inline.superscript  &plusmn; 0
+    else
+      .inline.heading N/A
+    if p.prevmmr.length
+      if p.mmr && p.prevmmr.length
+        if p.prevmmr[p.prevmmr.length-1].mmr < p.mmr
+          .inline.text-success  (+#{p.mmr-p.prevmmr[p.prevmmr.length-1].mmr})
+        else
+          .inline.text-danger  (#{p.mmr-p.prevmmr[p.prevmmr.length-1].mmr})
+      .inline.text-muted  last: #{p.prevmmr[p.prevmmr.length-1].mmr}
+  .col-sm-3
+    .inline #{dates[p.name]}
+.row.collapse(id=target)
+  .container.listentry-info
+    if p.error
+      .row
+        .col-sm-12
+          .inline.text-danger #{p.error}
+    .row
+      .col-sm-12 
+        if p.prevmmr.length
+          - var max = Math.max.apply(Math,p.prevmmr.map(function(o){return o.mmr;}))
+          | peak mmr: #{max}
+        else
+          - var res = p.mmr ? p.mmr : 'N/A'
+          | peak mmr: #{res}

@@ -1,0 +1,148 @@
+
+// fonts
+
+@font-face {
+  font-family: 'neutral_bpregular';
+  src: url('/assets/fonts/neutralbp-webfont.woff2') format('woff2'),
+       url('/assets/fonts/neutralbp-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'neutral_bp_medium';
+  src: url('/assets/fonts/neutralbp-medium-webfont.woff2') format('woff2'),
+       url('/assets/fonts/neutralbp-medium-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// general
+* {
+  margin: 0;
+}
+
+html {
+  background: 
+    /* top, transparent red, faked with gradient */ 
+    linear-gradient(
+      rgba(51, 51, 51, .8), 
+      rgba(51, 51, 51, .8)
+    ),
+    /* bottom, image */
+    url(/assets/images/bg.jpg) no-repeat center center fixed;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  -webkit-background-size: cover;
+  background-size: cover;
+  height: 100%;
+}
+
+body {
+  background-color: rgba(0,0,0,0);
+  font-family: 'neutral_bpregular';
+  height: 100%;
+}
+
+a {
+  color: $brand-primary;
+  text-decoration: underline;
+  &:hover {
+    color: lighten($brand-primary, 10%);
+  }
+}
+
+.inline {
+  display: inline;
+}
+
+.heading {
+  font-family: 'neutral_bp_medium';
+  padding-right: .2em;
+}
+
+.superscript {
+  font-size: $font-size-h6;
+  vertical-align: super;
+}
+
+// title
+
+.title {
+  padding: 3em 0;
+  color: $gray-lighter;
+}
+
+.titlerow {
+  margin-bottom: 1em;
+}
+
+.titleicon {
+  float: left;
+  height: 120px;
+  width: 120px;
+  border-radius: 50%;
+  background: url(/assets/images/icon.jpg) no-repeat center center;
+  background-size: 200%;
+}
+
+.titleheader {
+  float: left;
+  font-family: 'neutral_bp_medium';
+  font-size: 6em;
+  margin-right: .3em;
+}
+
+.titleinfo {
+  font-size: $font-size-h4;
+}
+
+// list
+
+.list {
+  background-color: $gray-lighter;
+}
+
+.listheader {
+  font-size: $font-size-h3;
+  padding: .3em;
+}
+
+.listentry {
+  font-size: $font-size-h4;
+  padding: .4em;
+  border-top: .1em solid $gray-dark;
+  &:hover, &[aria-expanded="true"] {
+    background-color: $gray-light2;
+  }
+}
+
+.listentry-info {
+  padding: .2em 1em 1em 1em;
+  font-size: $font-size-h4;
+  background-color: $gray-light2;
+}
+
+// footer
+
+.page-wrap {
+  min-height: 100%;
+  margin-bottom: -$footer-height; 
+}
+
+.page-wrap:after {
+  height: $footer-height;
+  content: "";
+  display: block;
+}
+
+.footer {
+  height: $footer-height;
+  font-size: $font-size-h4;
+  background-color: $gray-dark;
+  color: $gray-lighter;
+
+  .footercontainer {
+    padding: 1em;
+  }
+}
