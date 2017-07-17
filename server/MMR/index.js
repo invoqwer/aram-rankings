@@ -237,27 +237,34 @@ var getTrackedPlayers = function (req, res) {
 }
 
 var updateAll = function(callback) {
-    var list = getListArray();
-    async.eachLimit(list, 5,
-        function(player, cb) {
-            console.log('Updating: ' + player);
-            var user = {
-                region: 'na',
-                name: player.toLowerCase()
-            };
-            updatePlayer(user, function(err, doc) {
-                // if (doc) console.log(doc);
-                if (err) return cb(err);
-                return cb();
+    // Adding from a list
+    // var nameArray = getListArray();
+    
+    // Adding manually via POST - updating by iterating over each doc
+    Player.distinct('name', function(err, nameArray) {
+        if (err) return handleError(err);
+        console.log(nameArray.length);
+        async.eachLimit(nameArray, 5,
+            function(player, cb) {
+                console.log('Updating: ' + player);
+                var user = {
+                    region: 'na',
+                    name: player.toLowerCase()
+                };
+                updatePlayer(user, function(err, doc) {
+                    // if (doc) console.log(doc);
+                    if (err) return cb(err);
+                    return cb();
+                });
+            }, function(err) {
+                if (err) return handleError(err);
+                updateRankings(function(err, players) {
+                    if(err) return handleError(err);
+                    console.log('done');
+                    return callback(players);
+                });
             });
-        }, function(err) {
-            if (err) return handleError(err);
-            updateRankings(function(err, players) {
-                if(err) return handleError(err);
-                console.log('done');
-                return callback(players);
-            });
-        });
+    });
 }
 
 var updateSinglePlayer = function (req, res) {
