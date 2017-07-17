@@ -35,7 +35,7 @@
           .inline.superscript  &plusmn; 0
     else
       .inline.heading N/A
-    if p.prevmmr.length
+    if p.prevmmr.length && p.prevmmr[p.prevmmr.length-1].mmr
       if p.mmr && p.prevmmr[p.prevmmr.length-1].mmr
         if p.prevmmr[p.prevmmr.length-1].mmr < p.mmr
           .inline.text-success  (+#{p.mmr-p.prevmmr[p.prevmmr.length-1].mmr})

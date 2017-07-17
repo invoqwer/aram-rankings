@@ -21,8 +21,7 @@ var playerSchema = new Schema({
 var Player = mongoose.model('Player', playerSchema);
 
 var handleError = function(err) {
-    console.log('error');
-    res.send(err);
+    console.log('error: ' + err);
 }
 
 var getListArray = function() {
@@ -147,9 +146,15 @@ var updateRankings = function(callback) {
                 // mmr: E -> E
                 } else {
                     if (prevmmr == p.mmr)  {
+                        if (p.rank != rank) {
+                            p.lastrank = p.rank;
+                        }
                         p.rank = rank;
                     } else {
                         rank += 1;
+                        if (p.rank != rank) {
+                            p.lastrank = p.rank;
+                        }
                         prevmmr = p.mmr;
                         p.rank = rank;
                     }
@@ -246,7 +251,7 @@ var updateAll = function(callback) {
                 return cb();
             });
         }, function(err) {
-            if(err) return handleError(err);
+            if (err) return handleError(err);
             updateRankings(function(err, players) {
                 if(err) return handleError(err);
                 console.log('done');
@@ -269,6 +274,27 @@ var updateAllPlayers = function (req, res) {
     updateAll(function(players) {
         res.send(players);
     });
+}
+
+// takes an array of users to delete
+// req.body = {[ "name", "name" ... ]}
+var deletePlayers = function (req, res) {
+    var deletecount = 0;
+    async.eachLimit(req.body, 20,
+        function(user, cb) {
+            Player.findOne({ 'name': user }, function(err, player) {
+                if (err) return handleError(err);
+                player.remove();
+                deletecount += 1;
+                cb();
+            });
+        }, function(err) {
+            if (err) return handleError(err);
+            updateRankings(function(err, players) {
+                if(err) return handleError(err);
+                res.send('Deleted: ' + deletecount + '/' + req.body.length);
+            });
+        });
 }
 
 var test = function (req, res) {
@@ -296,5 +322,6 @@ module.exports = {
     getTrackedPlayers: getTrackedPlayers,
     updateAll: updateAll,
     updateSinglePlayer: updateSinglePlayer,
-    updateAllPlayers: updateAllPlayers
+    updateAllPlayers: updateAllPlayers,
+    deletePlayers: deletePlayers
 }
