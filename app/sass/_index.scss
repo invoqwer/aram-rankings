@@ -46,9 +46,10 @@ body {
 
 a {
   color: $brand-primary;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover {
     color: lighten($brand-primary, 10%);
+    text-decoration: none;
   }
 }
 
